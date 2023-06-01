@@ -1,28 +1,9 @@
 import streamlit as st
-from rembg import remove
 from PIL import Image
 from io import BytesIO
 from base64 import b64decode, b64encode
 import requests
-
-st.set_page_config(layout="wide", page_title="Pixarizer")
-
-st.write("## Pixarizer - Powered by OctoAI")
-st.write(
-    "Upload an image to turn it into a scene from a Pixar movie! Full quality images can be downloaded from the sidebar. This application is powered by OctoML's OctoAI compute service. The image to image transfer is achieved via the Pixar Cartoon Type B Stable Diffusion checkpoint available on CivitAI: https://civitai.com/models/75650/disney-pixar-cartoon-type-b."
-)
-
-st.write(
-    "     :camera_with_flash: Tip #1: works best with a square-ish image."
-)
-st.write(
-    "     :blush: Tip #2: works best on close ups (e.g. portraits, profile pics)."
-)
-st.write(
-    "     :woman-getting-haircut: Tip #3: avoid cropping the heads of the person in the photo."
-)
-
-st.sidebar.write("## Upload and download :gear:")
+import random
 
 # PIL helper
 def crop_center(pil_img, crop_width, crop_height):
@@ -32,11 +13,9 @@ def crop_center(pil_img, crop_width, crop_height):
                          (img_width + crop_width) // 2,
                          (img_height + crop_height) // 2))
 
-
 # PIL helper
 def crop_max_square(pil_img):
     return crop_center(pil_img, min(pil_img.size), min(pil_img.size))
-
 
 # Download the fixed image
 def convert_image(img):
@@ -45,16 +24,16 @@ def convert_image(img):
     byte_im = buf.getvalue()
     return byte_im
 
-def pixarize_image(upload):
-    image = Image.open(upload)
-    image = crop_max_square(image)
-    image = image.resize((512, 512))
+def pixarize_image(upload, strength, seed):
+    input_img = Image.open(upload)
+    cropped_img = crop_max_square(input_img)
+    resized_img = cropped_img.resize((512, 512))
     col1.write("Original Image :camera:")
-    col1.image(image)
+    col1.image(resized_img)
 
     # Prepare the JSON query to send to OctoAI's inference endpoint
     buffer = BytesIO()
-    image.save(buffer, format="png")
+    resized_img.save(buffer, format="png")
     image_out_bytes = buffer.getvalue()
     image_out_b64 = b64encode(image_out_bytes)
     model_request = {
@@ -65,8 +44,9 @@ def pixarize_image(upload):
         "vae": "YOZORA.vae.pt",
         "sampler": "K_EULER_ANCESTRAL",
         "cfg_scale": 7,
-        "strength": 0.4,
+        "strength": float(strength)/10,
         "num_images": 1,
+        "seed": seed,
         "width": 512,
         "height": 512,
         "steps": 20
@@ -78,23 +58,64 @@ def pixarize_image(upload):
     )
 
     img_bytes = b64decode(reply.json()["completion"]["image_0"])
-    pixarized = Image.open(BytesIO(img_bytes), formats=("png",))
+    characterized = Image.open(BytesIO(img_bytes), formats=("png",))
 
-    col2.write("Pixarized Image (takes about 20s to generate) :magic_wand:")
-    col2.image(pixarized)
+    col2.write("Transformed Image :magic_wand:")
+    col2.image(characterized)
     st.sidebar.markdown("\n")
-    st.sidebar.download_button("Download pixarized image", convert_image(pixarized), "pixarized.png", "pixarized/png")
+    st.sidebar.download_button("Download transformed image", convert_image(characterized), "characterized.png", "characterized/png")
+
+st.set_page_config(layout="wide", page_title="Cartoonizer")
+
+st.write("## Cartoonizer - Powered by OctoAI")
+st.markdown(
+    "Upload a photo and turn yourself into a CGI character in about 20s! Full quality images can be downloaded from the sidebar. This application is powered by OctoML's OctoAI compute service. The image to image transfer is achieved via the [Pixar Cartoon Type B](https://civitai.com/models/75650/disney-pixar-cartoon-type-b) checkpoint on CivitAI."
+)
+
+st.markdown(
+    " * :camera_with_flash: Tip #1: works best on a square-ish image."
+)
+st.markdown(
+    " * :blush: Tip #2: works best on close ups (e.g. portraits, profile pics), rather than full body pictures."
+)
+st.markdown(
+    " * :woman-getting-haircut: Tip #3: for best results, avoid cropping heads/faces."
+)
 
 col1, col2 = st.columns(2)
 my_upload = st.sidebar.file_uploader("Upload an image (works best on square photos)", type=["png", "jpg", "jpeg"])
 
+strength = st.slider(
+    "Select the transformation strength (lower: closer to original, higher: bigger departure from original, 4-5 being a good sweet spot)",
+    1, 10, 4)
+
+seed = 0
+if st.button('I\'m feeling lucky'):
+    seed = random.randint(0, 1024)
+    st.write('Random seed: {}'.format(seed))
+else:
+    st.write('Random seed: {}'.format(seed))
+
+st.sidebar.write("## Upload and download :gear:")
+
+st.markdown(
+    "**Disclaimer**: Cartoonizer is built on the foundation of CLIP and Stable Diffusion models, and is therefore likely to carry forward the potential dangers inherent in these base models. ***It's capable of generating unintended, unsuitable, offensive, and/or incorrect outputs. We therefore strongly recommend exercising caution and conducting comprehensive assessments before deploying this model into any practical applications.***"
+)
+
+st.markdown(
+    "By releasing this model, we acknowledge the possibility of it being misused. However, we believe that by making such models publicly available, we can encourage the commercial and research communities to delve into the potential risks of generative AI and subsequently, devise improved strategies to lessen these risks in upcoming models. If you are researcher and would like to study this subject further, contact us and we’d love to work with you!"
+)
+
+st.markdown(
+    "Report any issues, bugs, unexpected behaviors [here](https://github.com/tmoreau89/pixarize/issues)"
+)
 
 if my_upload is not None:
-    pixarize_image(upload=my_upload)
+    pixarize_image(my_upload, strength, seed)
 else:
     image = Image.open("./thierry.png")
     col1.write("Original Image :camera:")
     col1.image(image)
-    pixarized = Image.open("./pixarized.png")
-    col2.write("Pixarized Image (takes about 20s to generate) :magic_wand:")
-    col2.image(pixarized)
+    cartoonized = Image.open("./cartoonized.png")
+    col2.write("Cartoonized Image (preview):magic_wand:")
+    col2.image(cartoonized)
