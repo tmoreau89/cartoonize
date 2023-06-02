@@ -1,5 +1,5 @@
 import streamlit as st
-from PIL import Image
+from PIL import Image, ExifTags
 from io import BytesIO
 from base64 import b64decode, b64encode
 import requests
@@ -26,6 +26,22 @@ def convert_image(img):
 
 def pixarize_image(upload, strength, seed):
     input_img = Image.open(upload)
+    try:
+        # Rotate based on Exif Data
+        for orientation in ExifTags.TAGS.keys():
+            if ExifTags.TAGS[orientation]=='Orientation':
+                break
+        exif = input_img._getexif()
+        if exif[orientation] == 3:
+            input_img=input_img.rotate(180, expand=True)
+        elif exif[orientation] == 6:
+            input_img=input_img.rotate(270, expand=True)
+        elif exif[orientation] == 8:
+            input_img=input_img.rotate(90, expand=True)
+    except:
+        # Do nothing
+        print("No rotation to perform based on Exif data")
+    # Apply cropping and resizing to work on a square image
     cropped_img = crop_max_square(input_img)
     resized_img = cropped_img.resize((512, 512))
     col1.write("Original Image :camera:")
@@ -62,28 +78,30 @@ def pixarize_image(upload, strength, seed):
 
     col2.write("Transformed Image :magic_wand:")
     col2.image(cartoonized)
-    st.sidebar.markdown("\n")
-    st.sidebar.download_button("Download transformed image", convert_image(cartoonized), "cartoonized.png", "cartoonized/png")
+    st.markdown("\n")
+    st.download_button("Download transformed image", convert_image(cartoonized), "cartoonized.png", "cartoonized/png")
 
 st.set_page_config(layout="wide", page_title="Cartoonizer")
 
 st.write("## Cartoonizer - Powered by OctoAI")
 st.markdown(
-    "Upload a photo and turn yourself into a CGI character in about 3s! Full quality images can be downloaded from the sidebar. This application is powered by OctoML's OctoAI compute service. The image to image transfer is achieved via the [Pixar Cartoon Type B](https://civitai.com/models/75650/disney-pixar-cartoon-type-b) checkpoint on CivitAI."
+    "Upload a photo and turn yourself into a CGI character! Full quality images can be downloaded at the bottom of the page."
 )
 
 st.markdown(
     " * :camera_with_flash: Tip #1: works best on a square-ish image."
 )
 st.markdown(
-    " * :blush: Tip #2: works best on close ups (e.g. portraits, profile pics), rather than full body pictures."
+    " * :blush: Tip #2: works best on close ups (e.g. portraits), rather than full body or group photos."
 )
 st.markdown(
     " * :woman-getting-haircut: Tip #3: for best results, avoid cropping heads/faces."
 )
 
+# st.write("## Upload and download :gear:")
+my_upload = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
+
 col1, col2 = st.columns(2)
-my_upload = st.sidebar.file_uploader("Upload an image (works best on square photos)", type=["png", "jpg", "jpeg"])
 
 strength = st.slider(
     ":brain: Imagination Slider (lower: closer to original, higher: more imaginative result)",
@@ -93,26 +111,26 @@ seed = 0
 if st.button('I\'m feeling lucky'):
     seed = random.randint(0, 1024)
 
-st.sidebar.write("## Upload and download :gear:")
+st.sidebar.markdown("The image to image transfer is achieved via the [Pixar Cartoon Type B](https://civitai.com/models/75650/disney-pixar-cartoon-type-b) checkpoint on CivitAI.")
 
-st.markdown(
-    "**Disclaimer**: Cartoonizer is built on the foundation of CLIP and Stable Diffusion models, and is therefore likely to carry forward the potential dangers inherent in these base models. ***It's capable of generating unintended, unsuitable, offensive, and/or incorrect outputs. We therefore strongly recommend exercising caution and conducting comprehensive assessments before deploying this model into any practical applications.***"
+st.sidebar.markdown(
+    ":warning: **Disclaimer** :warning:: Cartoonizer is built on the foundation of [CLIP Interrogator](https://huggingface.co/spaces/pharma/CLIP-Interrogator) and [Stable Diffusion 1.5](https://huggingface.co/runwayml/stable-diffusion-v1-5) models, and is therefore likely to carry forward the potential dangers inherent in these base models. ***It's capable of generating unintended, unsuitable, offensive, and/or incorrect outputs. We therefore strongly recommend exercising caution and conducting comprehensive assessments before deploying this model into any practical applications.***"
 )
 
-st.markdown(
+st.sidebar.markdown(
     "By releasing this model, we acknowledge the possibility of it being misused. However, we believe that by making such models publicly available, we can encourage the commercial and research communities to delve into the potential risks of generative AI and subsequently, devise improved strategies to lessen these risks in upcoming models. If you are researcher and would like to study this subject further, contact us and we’d love to work with you!"
 )
 
-st.markdown(
+st.sidebar.markdown(
     "Report any issues, bugs, unexpected behaviors [here](https://github.com/tmoreau89/cartoonize/issues)"
 )
 
 if my_upload is not None:
     pixarize_image(my_upload, strength, seed)
-else:
-    image = Image.open("./thierry.png")
-    col1.write("Original Image :camera:")
-    col1.image(image)
-    cartoonized = Image.open("./cartoonized.png")
-    col2.write("Cartoonized Image (preview):magic_wand:")
-    col2.image(cartoonized)
+# else:
+#     image = Image.open("./thierry.png")
+#     col1.write("Original Image :camera:")
+#     col1.image(image)
+#     cartoonized = Image.open("./cartoonized.png")
+#     col2.write("Cartoonized Image (preview):magic_wand:")
+#     col2.image(cartoonized)
