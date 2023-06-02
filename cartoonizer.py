@@ -86,7 +86,7 @@ col1, col2 = st.columns(2)
 my_upload = st.sidebar.file_uploader("Upload an image (works best on square photos)", type=["png", "jpg", "jpeg"])
 
 strength = st.slider(
-    "Imagination (lower: closer to original, higher: more imaginative result)",
+    ":brain: Imagination Slider (lower: closer to original, higher: more imaginative result)",
     2, 8, 5)
 
 seed = 0
