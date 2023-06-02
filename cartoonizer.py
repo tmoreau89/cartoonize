@@ -86,7 +86,7 @@ col1, col2 = st.columns(2)
 my_upload = st.sidebar.file_uploader("Upload an image (works best on square photos)", type=["png", "jpg", "jpeg"])
 
 strength = st.slider(
-    "Select the transformation strength (lower: closer to original, higher: bigger departure from original, 5 being a good sweet spot)",
+    "Select the imagination level (lower: closer to original, higher: more imaginative result, 5 being a good sweet spot)",
     2, 8, 5)
 
 seed = 0
