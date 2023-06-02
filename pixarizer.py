@@ -39,7 +39,7 @@ def pixarize_image(upload, strength, seed):
     model_request = {
         "image": image_out_b64.decode("utf8"),
         "prompt": "masterpiece, best quality",
-        "negative_prompt": "EasyNegative, drawn by bad-artist, sketch by bad-artist-anime, (bad_prompt:0.8), (artist name, signature, watermark:1.4), (ugly:1.2), (worst quality, poor details:1.4), bad-hands-5, badhandv4, blurry",
+        "negative_prompt": "EasyNegative, drawn by bad-artist, sketch by bad-artist-anime, (bad_prompt:0.8), (artist name, signature, watermark:1.4), (ugly:1.2), (worst quality, poor details:1.4), bad-hands-5, badhandv4, blurry, nsfw",
         "model": "DisneyPixarCartoon_v10",
         "vae": "YOZORA.vae.pt",
         "sampler": "K_EULER_ANCESTRAL",
@@ -52,24 +52,24 @@ def pixarize_image(upload, strength, seed):
         "steps": 20
     }
     reply = requests.post(
-        f"https://pixarify-4jkxk521l3v1.octoai.cloud/predict",
+        f"https://cartoonizer-4jkxk521l3v1.octoai.cloud/predict",
         headers={"Content-Type": "application/json"},
         json=model_request
     )
 
     img_bytes = b64decode(reply.json()["completion"]["image_0"])
-    characterized = Image.open(BytesIO(img_bytes), formats=("png",))
+    cartoonized = Image.open(BytesIO(img_bytes), formats=("png",))
 
     col2.write("Transformed Image :magic_wand:")
-    col2.image(characterized)
+    col2.image(cartoonized)
     st.sidebar.markdown("\n")
-    st.sidebar.download_button("Download transformed image", convert_image(characterized), "characterized.png", "characterized/png")
+    st.sidebar.download_button("Download transformed image", convert_image(cartoonized), "cartoonized.png", "cartoonized/png")
 
 st.set_page_config(layout="wide", page_title="Cartoonizer")
 
 st.write("## Cartoonizer - Powered by OctoAI")
 st.markdown(
-    "Upload a photo and turn yourself into a CGI character in about 20s! Full quality images can be downloaded from the sidebar. This application is powered by OctoML's OctoAI compute service. The image to image transfer is achieved via the [Pixar Cartoon Type B](https://civitai.com/models/75650/disney-pixar-cartoon-type-b) checkpoint on CivitAI."
+    "Upload a photo and turn yourself into a CGI character in about 3s! Full quality images can be downloaded from the sidebar. This application is powered by OctoML's OctoAI compute service. The image to image transfer is achieved via the [Pixar Cartoon Type B](https://civitai.com/models/75650/disney-pixar-cartoon-type-b) checkpoint on CivitAI."
 )
 
 st.markdown(
@@ -86,15 +86,12 @@ col1, col2 = st.columns(2)
 my_upload = st.sidebar.file_uploader("Upload an image (works best on square photos)", type=["png", "jpg", "jpeg"])
 
 strength = st.slider(
-    "Select the transformation strength (lower: closer to original, higher: bigger departure from original, 4-5 being a good sweet spot)",
-    1, 10, 4)
+    "Select the transformation strength (lower: closer to original, higher: bigger departure from original, 5 being a good sweet spot)",
+    2, 8, 5)
 
 seed = 0
 if st.button('I\'m feeling lucky'):
     seed = random.randint(0, 1024)
-    st.write('Random seed: {}'.format(seed))
-else:
-    st.write('Random seed: {}'.format(seed))
 
 st.sidebar.write("## Upload and download :gear:")
 
