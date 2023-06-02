@@ -104,7 +104,7 @@ st.markdown(
 )
 
 st.markdown(
-    "Report any issues, bugs, unexpected behaviors [here](https://github.com/tmoreau89/pixarize/issues)"
+    "Report any issues, bugs, unexpected behaviors [here](https://github.com/tmoreau89/cartoonize/issues)"
 )
 
 if my_upload is not None:
