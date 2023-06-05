@@ -5,6 +5,8 @@ from base64 import b64decode, b64encode
 import requests
 import random
 
+clip_reply = ""
+
 # PIL helper
 def crop_center(pil_img, crop_width, crop_height):
     img_width, img_height = pil_img.size
@@ -52,9 +54,32 @@ def pixarize_image(upload, strength, seed):
     resized_img.save(buffer, format="png")
     image_out_bytes = buffer.getvalue()
     image_out_b64 = b64encode(image_out_bytes)
-    model_request = {
+
+    # Prepare CLIP request
+    clip_request = {
+        "mode": "fast",
         "image": image_out_b64.decode("utf8"),
-        "prompt": "masterpiece, best quality",
+    }
+    # Send to CLIP endpoint
+    reply = requests.post(
+        f"https://cartoonizer-clip-dev-4jkxk521l3v1.octoai.cloud/predict",
+        headers={"Content-Type": "application/json"},
+        json=clip_request
+    )
+    # Retrieve prompt
+    clip_reply = reply.json()["completion"]["labels"]
+    # This returns many labels, so keep the top one
+    clip_reply = clip_reply.split(', ')
+    # clip_reply.sort(key=len, reverse=True)
+    clip_reply = ', '.join(clip_reply[0:3])
+
+    # Editable CLIP interrogator output
+    prompt = st.text_area("AI-generated, human editable label:", value=clip_reply)
+
+    # Prepare SD request for img2img
+    sd_request = {
+        "image": image_out_b64.decode("utf8"),
+        "prompt": prompt,
         "negative_prompt": "EasyNegative, drawn by bad-artist, sketch by bad-artist-anime, (bad_prompt:0.8), (artist name, signature, watermark:1.4), (ugly:1.2), (worst quality, poor details:1.4), bad-hands-5, badhandv4, blurry, nsfw",
         "model": "DisneyPixarCartoon_v10",
         "vae": "YOZORA.vae.pt",
@@ -68,9 +93,9 @@ def pixarize_image(upload, strength, seed):
         "steps": 20
     }
     reply = requests.post(
-        f"https://cartoonizer-4jkxk521l3v1.octoai.cloud/predict",
+        f"https://cartoonizer-sd-dev-4jkxk521l3v1.octoai.cloud/predict",
         headers={"Content-Type": "application/json"},
-        json=model_request
+        json=sd_request
     )
 
     img_bytes = b64decode(reply.json()["completion"]["image_0"])
@@ -83,9 +108,9 @@ def pixarize_image(upload, strength, seed):
 
 st.set_page_config(layout="wide", page_title="Cartoonizer")
 
-st.write("## Cartoonizer - Powered by OctoAI")
+st.write("## A More Transparent Cartoonizer - Powered by OctoAI")
 st.markdown(
-    "Upload a photo and turn yourself into a CGI character! Full quality images can be downloaded at the bottom of the page."
+    "Upload a photo and turn yourself into a CGI character! AIs are imperfect. You can edit the AI generated prompt to obtain a character that best fits you. Full quality images can be downloaded at the bottom of the page."
 )
 
 st.markdown(
