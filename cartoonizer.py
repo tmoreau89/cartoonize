@@ -133,7 +133,7 @@ strength = st.slider(
     3, 10, 5)
 
 seed = 0
-if st.button('I\'m feeling lucky'):
+if st.button('Regenerate'):
     seed = random.randint(0, 1024)
 
 st.sidebar.markdown("The image to image transfer is achieved via the [Pixar Cartoon Type B](https://civitai.com/models/75650/disney-pixar-cartoon-type-b) checkpoint on CivitAI.")
