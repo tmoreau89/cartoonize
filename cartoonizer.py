@@ -101,7 +101,7 @@ def pixarize_image(upload, strength, seed):
     img_bytes = b64decode(reply.json()["completion"]["image_0"])
     cartoonized = Image.open(BytesIO(img_bytes), formats=("png",))
 
-    col2.write("Transformed Image :magic_wand:")
+    col2.write("Transformed Image :star2:")
     col2.image(cartoonized)
     st.markdown("\n")
     st.download_button("Download transformed image", convert_image(cartoonized), "cartoonized.png", "cartoonized/png")
@@ -130,7 +130,7 @@ col1, col2 = st.columns(2)
 
 strength = st.slider(
     ":brain: Imagination Slider (lower: closer to original, higher: more imaginative result)",
-    2, 8, 5)
+    3, 10, 5)
 
 seed = 0
 if st.button('I\'m feeling lucky'):
@@ -157,5 +157,5 @@ if my_upload is not None:
 #     col1.write("Original Image :camera:")
 #     col1.image(image)
 #     cartoonized = Image.open("./cartoonized.png")
-#     col2.write("Cartoonized Image (preview):magic_wand:")
+#     col2.write("Cartoonized Image (preview):star2:")
 #     col2.image(cartoonized)
