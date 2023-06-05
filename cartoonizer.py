@@ -105,10 +105,10 @@ col1, col2 = st.columns(2)
 
 strength = st.slider(
     ":brain: Imagination Slider (lower: closer to original, higher: more imaginative result)",
-    2, 8, 5)
+    3, 10, 5)
 
 seed = 0
-if st.button('I\'m feeling lucky'):
+if st.button('Regenerate'):
     seed = random.randint(0, 1024)
 
 st.sidebar.markdown("The image to image transfer is achieved via the [Pixar Cartoon Type B](https://civitai.com/models/75650/disney-pixar-cartoon-type-b) checkpoint on CivitAI.")
