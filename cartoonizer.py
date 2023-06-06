@@ -62,7 +62,7 @@ def pixarize_image(upload, strength, seed):
     }
     # Send to CLIP endpoint
     reply = requests.post(
-        f"https://cartoonizer-clip-dev-4jkxk521l3v1.octoai.cloud/predict",
+        f"https://cartoonizer-clip-test-4jkxk521l3v1.octoai.cloud/predict",
         headers={"Content-Type": "application/json"},
         json=clip_request
     )
@@ -93,7 +93,7 @@ def pixarize_image(upload, strength, seed):
         "steps": 20
     }
     reply = requests.post(
-        f"https://cartoonizer-sd-dev-4jkxk521l3v1.octoai.cloud/predict",
+        f"https://cartoonizer-sd-test-4jkxk521l3v1.octoai.cloud/predict",
         headers={"Content-Type": "application/json"},
         json=sd_request
     )
