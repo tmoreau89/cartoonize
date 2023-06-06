@@ -68,7 +68,7 @@ def pixarize_image(upload, strength, seed):
         "steps": 20
     }
     reply = requests.post(
-        f"https://cartoonizer-4jkxk521l3v1.octoai.cloud/predict",
+        f"https://cartoonizer-v2-4jkxk521l3v1.octoai.cloud/predict",
         headers={"Content-Type": "application/json"},
         json=model_request
     )
