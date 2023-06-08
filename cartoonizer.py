@@ -24,7 +24,7 @@ def convert_image(img):
     byte_im = buf.getvalue()
     return byte_im
 
-def pixarize_image(upload, strength, seed):
+def cartoonize_image(upload, strength, seed):
     input_img = Image.open(upload)
     try:
         # Rotate based on Exif Data
@@ -111,7 +111,7 @@ seed = 0
 if st.button('Regenerate'):
     seed = random.randint(0, 1024)
 
-st.sidebar.markdown("The image to image transfer is achieved via the [Pixar Cartoon Type B](https://civitai.com/models/75650/disney-pixar-cartoon-type-b) checkpoint on CivitAI.")
+st.sidebar.markdown("The image to image transfer is achieved via the [following checkpoint](https://civitai.com/models/75650/disney-pixar-cartoon-type-b) available on CivitAI.")
 
 st.sidebar.markdown(
     ":warning: **Disclaimer** :warning:: Cartoonizer is built on the foundation of [CLIP Interrogator](https://huggingface.co/spaces/pharma/CLIP-Interrogator) and [Stable Diffusion 1.5](https://huggingface.co/runwayml/stable-diffusion-v1-5) models, and is therefore likely to carry forward the potential dangers inherent in these base models. ***It's capable of generating unintended, unsuitable, offensive, and/or incorrect outputs. We therefore strongly recommend exercising caution and conducting comprehensive assessments before deploying this model into any practical applications.***"
@@ -126,7 +126,7 @@ st.sidebar.markdown(
 )
 
 if my_upload is not None:
-    pixarize_image(my_upload, strength, seed)
+    cartoonize_image(my_upload, strength, seed)
 # else:
 #     image = Image.open("./thierry.png")
 #     col1.write("Original Image :camera:")
