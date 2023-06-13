@@ -109,18 +109,24 @@ def cartoonize_image(upload, strength, seed):
 st.set_page_config(layout="wide", page_title="Cartoonizer")
 
 st.write("## Cartoonizer - Powered by OctoAI")
+
 st.markdown(
-    "Upload a photo and turn yourself into a CGI character! Try OctoML's new compute service for free by signing up for early access: https://octoml.ai/"
+    "The fastest version of Stable Diffusion in the world is now available on OctoAI, where devs run, tune, and scale generative AI models. [Try it for free here.](http://octoml.ai/)"
 )
 
 st.markdown(
-    " * :camera_with_flash: Tip #1: works best on a square-ish image."
+    "### Upload a photo and turn yourself into a CGI character!"
+)
+
+
+st.markdown(
+    " :camera_with_flash: Tip #1: works best on a square image."
 )
 st.markdown(
-    " * :blush: Tip #2: works best on close ups (e.g. portraits), rather than full body or group photos."
+    " :blush: Tip #2: works best on close ups (e.g. portraits), rather than full body or group photos."
 )
 st.markdown(
-    " * :woman-getting-haircut: Tip #3: for best results, avoid cropping heads/faces."
+    " :woman-getting-haircut: Tip #3: for best results, avoid cropping heads/faces."
 )
 
 my_upload = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
