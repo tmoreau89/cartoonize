@@ -8,7 +8,9 @@ import random
 
 
 CLIP_ENDPOINT = "https://cartoonizer-clip-test-4jkxk521l3v1.octoai.cloud"
-SD_ENDPOINT = "https://cartoonizer-sd-test-4jkxk521l3v1.octoai.cloud"
+SD_CGI_ENDPOINT = "https://cartoonizer-sd-demo-cgi-4jkxk521l3v1.octoai.cloud"
+SD_DRAWING_ENDPOINT = "https://cartoonizer-sd-demo-handdrawn-4jkxk521l3v1.octoai.cloud"
+SD_COMIC_ENDPOINT = "https://cartoonizer-sd-demo-comic-4jkxk521l3v1.octoai.cloud"
 
 # PIL helper
 def crop_center(pil_img, crop_width, crop_height):
@@ -29,7 +31,7 @@ def convert_image(img):
     byte_im = buf.getvalue()
     return byte_im
 
-def cartoonize_image(upload, strength, seed):
+def cartoonize_image(upload, mode, strength, seed):
     input_img = Image.open(upload)
     try:
         # Rotate based on Exif Data
@@ -76,12 +78,22 @@ def cartoonize_image(upload, strength, seed):
     # Editable CLIP interrogator output
     # prompt = st.text_area("AI-generated, human editable label:", value=clip_reply)
 
+    if mode == "Hand Drawn":
+        sd_endpoint = SD_DRAWING_ENDPOINT
+        model = "hand_drawn"
+    elif mode == "CGI":
+        sd_endpoint = SD_CGI_ENDPOINT
+        model = "cgi"
+    elif mode == "Comic Strip":
+        sd_endpoint = SD_COMIC_ENDPOINT
+        model = "comic"
+
     # Prepare SD request for img2img
     sd_request = {
         "image": image_out_b64.decode("utf8"),
         "prompt": clip_reply,
         "negative_prompt": "EasyNegative, drawn by bad-artist, sketch by bad-artist-anime, (bad_prompt:0.8), (artist name, signature, watermark:1.4), (ugly:1.2), (worst quality, poor details:1.4), bad-hands-5, badhandv4, blurry, nsfw",
-        "model": "DisneyPixarCartoon_v10",
+        "model": model,
         "vae": "YOZORA.vae.pt",
         "sampler": "K_EULER_ANCESTRAL",
         "cfg_scale": 7,
@@ -93,7 +105,7 @@ def cartoonize_image(upload, strength, seed):
         "steps": 20
     }
     reply = requests.post(
-        "{}/predict".format(SD_ENDPOINT),
+        "{}/predict".format(sd_endpoint),
         headers={"Content-Type": "application/json"},
         json=sd_request
     )
@@ -115,7 +127,7 @@ st.markdown(
 )
 
 st.markdown(
-    "### Upload a photo and turn yourself into a CGI character!"
+    "### Upload a photo and turn yourself into a cartoon character!"
 )
 
 
@@ -128,6 +140,10 @@ st.markdown(
 st.markdown(
     " :woman-getting-haircut: Tip #3: for best results, avoid cropping heads/faces."
 )
+
+mode = st.radio(
+    'Visual Effect',
+    ("CGI", "Hand Drawn", "Comic Strip"))
 
 my_upload = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
 
@@ -157,4 +173,4 @@ st.sidebar.markdown(
 )
 
 if my_upload is not None:
-    cartoonize_image(my_upload, strength, seed)
+    cartoonize_image(my_upload, mode, strength, seed)
