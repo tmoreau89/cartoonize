@@ -113,7 +113,7 @@ st.set_page_config(layout="wide", page_title="Cartoonizer")
 st.write("## Cartoonizer - Powered by OctoAI")
 
 st.markdown(
-    "This demo app was build with the fastest Stable Diffusion in the world, now available for free on OctoAI, where devs run, tune, and scale super-fast generative AI models. [Try it for free here.](http://octoml.ai/)"
+    "This demo app was built with the fastest Stable Diffusion in the world, now available for free on OctoAI, where devs run, tune, and scale super-fast generative AI models. [Try it for free here.](http://octoml.ai/)"
 )
 
 st.markdown(
