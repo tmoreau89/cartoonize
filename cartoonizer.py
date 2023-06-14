@@ -130,7 +130,8 @@ st.markdown(
     " :woman-getting-haircut: Tip #3: for best results, avoid cropping heads/faces."
 )
 
-my_upload = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
+# my_upload = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
+my_upload = st.camera_input("Take a picture")
 
 col1, col2 = st.columns(2)
 
