@@ -109,57 +109,57 @@ st.set_page_config(layout="wide", page_title="Cartoonizer")
 
 st.write("## Cartoonizer - Powered by OctoAI")
 
+# st.markdown(
+#     "Cartoonizer has been decommissioned temporarily to iron out T&S. Reach out to Thierry Moreau or Britanny Carambio if you'd want to use it for a project."
+# )
+
 st.markdown(
-    "Cartoonizer has been decommissioned temporarily to iron out T&S. Reach out to Thierry Moreau or Britanny Carambio if you'd want to use it for a project."
+    "The fastest version of Stable Diffusion in the world is now available on OctoAI, where devs run, tune, and scale generative AI models. [Try it for free here.](http://octoml.ai/)"
 )
 
-# st.markdown(
-#     "The fastest version of Stable Diffusion in the world is now available on OctoAI, where devs run, tune, and scale generative AI models. [Try it for free here.](http://octoml.ai/)"
-# )
+st.markdown(
+    "### Upload a photo and turn yourself into a cartoon character!"
+)
 
-# st.markdown(
-#     "### Upload a photo and turn yourself into a cartoon character!"
-# )
+st.markdown(
+    " :camera_with_flash: Tip #1: works best on a square image."
+)
+st.markdown(
+    " :blush: Tip #2: works best on close ups (e.g. portraits), rather than full body or group photos."
+)
+st.markdown(
+    " :woman-getting-haircut: Tip #3: for best results, avoid cropping heads/faces."
+)
 
-# st.markdown(
-#     " :camera_with_flash: Tip #1: works best on a square image."
-# )
-# st.markdown(
-#     " :blush: Tip #2: works best on close ups (e.g. portraits), rather than full body or group photos."
-# )
-# st.markdown(
-#     " :woman-getting-haircut: Tip #3: for best results, avoid cropping heads/faces."
-# )
+my_upload = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
+# my_upload = st.camera_input("Take a picture")
 
-# my_upload = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
-# # my_upload = st.camera_input("Take a picture")
+col1, col2 = st.columns(2)
 
-# col1, col2 = st.columns(2)
+extra_desc = st.text_input("Add more context to customize the output")
 
-# extra_desc = st.text_input("Add more context to customize the output")
+strength = st.slider(
+    ":brain: Imagination Slider (lower: closer to original, higher: more imaginative result)",
+    3, 10, 5)
 
-# strength = st.slider(
-#     ":brain: Imagination Slider (lower: closer to original, higher: more imaginative result)",
-#     3, 10, 5)
+seed = 0
+if st.button('Regenerate'):
+    seed = random.randint(0, 1024)
 
-# seed = 0
-# if st.button('Regenerate'):
-#     seed = random.randint(0, 1024)
+st.sidebar.image("octoml-octo-ai-logo-color.png")
+st.sidebar.markdown("The image to image generation is achieved via the [following checkpoint](https://civitai.com/models/75650/disney-pixar-cartoon-type-b) on CivitAI.")
 
-# st.sidebar.image("octoml-octo-ai-logo-color.png")
-# st.sidebar.markdown("The image to image generation is achieved via the [following checkpoint](https://civitai.com/models/75650/disney-pixar-cartoon-type-b) on CivitAI.")
+st.sidebar.markdown(
+    ":warning: **Disclaimer** :warning:: Cartoonizer is built on the foundation of [CLIP Interrogator](https://huggingface.co/spaces/pharma/CLIP-Interrogator) and [Stable Diffusion 1.5](https://huggingface.co/runwayml/stable-diffusion-v1-5), and is therefore likely to carry forward the potential dangers inherent in these base models. ***It's capable of generating unintended, unsuitable, offensive, and/or incorrect outputs. We therefore strongly recommend exercising caution and conducting comprehensive assessments before deploying this model into any practical applications.***"
+)
 
-# st.sidebar.markdown(
-#     ":warning: **Disclaimer** :warning:: Cartoonizer is built on the foundation of [CLIP Interrogator](https://huggingface.co/spaces/pharma/CLIP-Interrogator) and [Stable Diffusion 1.5](https://huggingface.co/runwayml/stable-diffusion-v1-5), and is therefore likely to carry forward the potential dangers inherent in these base models. ***It's capable of generating unintended, unsuitable, offensive, and/or incorrect outputs. We therefore strongly recommend exercising caution and conducting comprehensive assessments before deploying this model into any practical applications.***"
-# )
+st.sidebar.markdown(
+    "By releasing this model, we acknowledge the possibility of it being misused. However, we believe that by making such models publicly available, we can encourage the commercial and research communities to delve into the potential risks of generative AI and subsequently, devise improved strategies to lessen these risks in upcoming models. If you are researcher and would like to study this subject further, contact us and we’d love to work with you!"
+)
 
-# st.sidebar.markdown(
-#     "By releasing this model, we acknowledge the possibility of it being misused. However, we believe that by making such models publicly available, we can encourage the commercial and research communities to delve into the potential risks of generative AI and subsequently, devise improved strategies to lessen these risks in upcoming models. If you are researcher and would like to study this subject further, contact us and we’d love to work with you!"
-# )
+st.sidebar.markdown(
+    "Report any issues, bugs, unexpected behaviors [here](https://github.com/tmoreau89/cartoonize/issues)"
+)
 
-# st.sidebar.markdown(
-#     "Report any issues, bugs, unexpected behaviors [here](https://github.com/tmoreau89/cartoonize/issues)"
-# )
-
-# if my_upload is not None:
-#     cartoonize_image(my_upload, strength, seed, extra_desc)
+if my_upload is not None:
+    cartoonize_image(my_upload, strength, seed, extra_desc)
